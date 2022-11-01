@@ -1,0 +1,78 @@
+---
+// Components
+import InputTextGroup from "../InputTextGroup.astro";
+import InputPasswordGroup from "../InputPasswordGroup.astro";
+
+export interface Props {
+  isSigninPage?: boolean;
+}
+const { isSigninPage = false } = Astro.props as Props;
+---
+
+<div class="d-flex flex-center flex-column flex-column-fluid p-10 pb-lg-20">
+  <!--begin::Greeting-->
+  <h1 class="fw-bolder fs-2qx text-primary mb-7">
+    {`${isSigninPage ? "Welcome back!" : "Welcome!"}`}
+  </h1>
+  <!--end::Greeting-->
+  <!--begin::Wrapper-->
+  <div class="w-lg-500px bg-body rounded shadow-sm p-10 p-lg-15 mx-auto">
+    <!--begin::Form-->
+    <form class="form w-100" novalidate="novalidate" id="form">
+      <!--begin::Heading-->
+      <div class="mb-10 text-center">
+        <!--begin::Title-->
+        <h1 class="text-gray-700 mb-3">
+          {`${isSigninPage ? "Sign In to Your Account" : "Create an Account"}`}
+        </h1>
+        <!--end::Title-->
+        <!--begin::Link-->
+        <div class="text-gray-400 fw-bold fs-4">
+          {`${isSigninPage ? "New Here?" : "Already have an account?"}`}
+          <a
+            href={`${isSigninPage ? "/auth/signup" : "/auth/signin"}`}
+            class="link-primary fw-bolder"
+            >{`${isSigninPage ? "Create an Account" : "Sign in Here"}`}</a
+          >
+        </div>
+        <!--end::Link-->
+      </div>
+      <!--end::Heading-->
+      <!--begin::Username input group-->
+      {
+        !isSigninPage && (
+          <InputTextGroup title="Username" name="username" required={true} />
+        )
+      }
+      <!--end::Username input group-->
+      <!--begin::Email input group-->
+      {
+        isSigninPage ?
+          <InputTextGroup title="Email" name="identifier" required={true} /> 
+          : <InputTextGroup title="Email" name="email" required={true} />
+      }
+      <!--end::Email input group-->
+      <!--begin::Passwword input group-->
+      <InputPasswordGroup />
+      <!--end::Passwword input group-->
+      <!--begin::Actions-->
+      <div class="text-center">
+        <button
+          type="submit"
+          id="kt_sign_up_submit"
+          class="btn btn-lg btn-primary w-100 mb-5"
+        >
+          <span class="indicator-label">Submit</span>
+          <span class="indicator-progress"
+            >Please wait...
+            <span class="spinner-border spinner-border-sm align-middle ms-2"
+            ></span>
+          </span>
+        </button>
+      </div>
+      <!--end::Actions-->
+    </form>
+    <!--end::Form-->
+  </div>
+  <!--end::Wrapper-->
+</div>

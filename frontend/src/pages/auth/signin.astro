@@ -1,0 +1,41 @@
+---
+// Components
+import Layout from "../../layouts/Layout.astro";
+import AuthForm from "../../components/auth/AuthForm.astro";
+---
+
+<Layout>
+  <AuthForm isSigninPage={true} />
+</Layout>
+
+<script>
+  // Get form
+  const form = document.querySelector(".form") as HTMLFormElement;
+  // Add event listener
+  form.addEventListener("submit", function(e) {
+    e.preventDefault()
+    // Get data from the form
+    const payload = new FormData(form)
+    // Try to sign in
+    fetch(`${import.meta.env.PUBLIC_SERVER_URL}/api/auth/local`, {
+        method: "POST", body: payload
+      })
+    .then(res => res.json())
+    .then(data => {
+      if(data.jwt) {
+        // Success! Save jwt token to cookie using 'cookie' endpoint
+        fetch(`${import.meta.env.PUBLIC_CLIENT_URL}/cookie`, {
+          method: "POST", headers: {"Authorization": `${data.jwt}`},
+        })
+        .then(res => {
+          // Redirect
+          window.location.href = "/products"
+        })
+      } else {
+        alert("Wrong credentials. Try again!")
+      }
+    })
+    .catch(err => console.log(err))
+  }
+)
+</script>

@@ -1,0 +1,24 @@
+---
+export interface Props {
+  title: string;
+  name: string;
+  required?: boolean;
+  placeholder?: string;
+}
+const {
+  title,
+  name,
+  placeholder = "",
+  required = false,
+} = Astro.props as Props;
+---
+
+<div class="mb-10 fv-row fv-plugins-icon-container">
+  <label class={`${required && "required"} form-label`}>{title}</label>
+  <input
+    type="text"
+    name={name}
+    class="form-control mb-2"
+    placeholder={placeholder}
+  />
+</div>
