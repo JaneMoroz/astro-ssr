@@ -86,7 +86,14 @@ import Nav from "./Nav/Nav.astro";
         }),
         body: JSON.stringify({cart: [...updatedCart]})
       })
-      .then(res => showToast("Success", "Update the page to see the difference!"))
+      .then(res => {
+        if(res.ok === false) {
+          showToast("Error", "OOPS :( Maybe you haven't SIGN IN 😬")
+        }
+        if(res.ok === true) {
+          showToast("Success", "Update the page to see the difference!")
+        }
+      })
     })
     .catch(err => showToast("Error", "OOPS :( Maybe you haven't SIGN IN 😬"))
   }
