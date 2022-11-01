@@ -31,3 +31,85 @@ const actions = [
     <ProductCard product={product} fullScreen={true}/>
   </div>
 </Layout>
+
+<script>
+  // Edit/Delete Product
+  const pageHero = document.querySelector("#kt_app_toolbar") as HTMLElement
+  pageHero.addEventListener('click', (event) => {
+    const element = event.target as HTMLElement
+    // Edit product
+    if(element.dataset.bsToggle) {
+      const productId = element.dataset.productid;
+      // Get product data
+      fetch(`${import.meta.env.PUBLIC_SERVER_URL}/api/products/${productId}/?populate=*`)
+        .then(res => res.json()).then(data => 
+        {
+          // Get form
+          const form = document.querySelector("#kt_ecommerce_add_product_form") as HTMLFormElement;
+          // Fill inputs with product data
+          const imageUrl = data.data.attributes.image.data.attributes.url;
+          const imageId = data.data.attributes.image.data.id
+          const titleInput = form.querySelector('input[name="title"]') as HTMLInputElement
+          titleInput.value = data.data.attributes.title
+          const priceInput = form.querySelector('input[name="price"]') as HTMLInputElement
+          priceInput.value = data.data.attributes.price
+          const image = form.querySelector("#product_image") as HTMLDivElement
+          image.style.backgroundImage = `url("${import.meta.env.PUBLIC_SERVER_URL}${imageUrl}")`
+          // Add event listener to form
+          form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            // Get image data
+            const payload = new FormData(form)
+            const title = payload.get("title");
+            const price = payload.get("price");
+            payload.delete("title")
+            payload.delete("price")
+            // Try to upload image
+            fetch(`${import.meta.env.PUBLIC_SERVER_URL}/api/upload`, {
+                method: "POST", body: payload
+              })
+            .then(res => res.json())
+            .then(data => {
+              // Use original image id, if uploading of the new image was unsuccesful
+              let imgId = imageId
+              // If uploading was succesful get uploaded image id
+              if(!data.error){
+                imgId = data[0].id
+              }
+              // Create updated product object
+              const product = {
+                title,
+                price,
+                image: imgId
+              }
+              // Update product on the server
+              fetch(`${import.meta.env.PUBLIC_SERVER_URL}/api/products/${productId}`,{
+                method: "PUT",
+                headers: new Headers({
+                  'Authorization': `Bearer ${document.cookie.slice(10)}`, 
+                  'Content-Type': 'application/json'
+                }),
+                body: JSON.stringify({data: product})
+              })
+            })
+            .catch(err => console.log(err))
+          });
+        })
+    } else {
+      // Delete product
+
+      // Get product id
+      const productId = element.dataset.productid;
+      // Delete product
+      fetch(`${import.meta.env.PUBLIC_SERVER_URL}/api/products/${productId}`,{
+        method: "DELETE",
+        headers: new Headers({
+          'Authorization': `Bearer ${document.cookie.slice(10)}`, 
+          'Content-Type': 'application/json'
+        })
+      })
+      .then(res => window.location.href = "/products")
+      .catch(err => console.log(err))
+    }
+  })
+</script>

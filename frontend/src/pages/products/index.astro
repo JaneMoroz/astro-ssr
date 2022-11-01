@@ -41,3 +41,41 @@ const products = data.data.map((product: { id: number; attributes: { title: stri
     <!--end::Products wrapper-->
   </div>
 </Layout>
+
+<script>
+  // Get form
+  const form = document.querySelector("#kt_ecommerce_add_product_form") as HTMLFormElement;
+  // Add event listener
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    // Get image data
+    const payload = new FormData(form)
+    const title = payload.get("title");
+    const price = payload.get("price");
+    payload.delete("title")
+    payload.delete("price")
+    // Upload image
+    fetch(`${import.meta.env.PUBLIC_SERVER_URL}/api/upload`, {
+        method: "POST", body: payload
+      })
+    .then(res => res.json()).then(data => {
+      // Get image id
+      const imgId = data[0].id
+      // Create new product object
+      const product = {
+        title,
+        price,
+        image: imgId
+      }
+      // Post new product
+      fetch(`${import.meta.env.PUBLIC_SERVER_URL}/api/products`,{
+        method: "POST",
+        headers: new Headers({
+          'Authorization': `Bearer ${document.cookie.slice(10)}`, 
+          'Content-Type': 'application/json'
+        }),
+        body: JSON.stringify({data: product})
+      })
+    }).catch(err => console.log(err))
+  });
+</script>
