@@ -1,15 +1,16 @@
 ---
+import Layout from "../layouts/Layout.astro";
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
-</html>
+<Layout>
+  <div
+    class="d-flex flex-column flex-column-fluid justify-content-center text-center p-10 py-lg-15"
+  >
+    <div class="pt-lg-10 mb-10">
+      <h1 class="fw-bolder fs-2qx text-gray-800 mb-7">Welcome!</h1>
+      <div class="text-center">
+        <a href="auth/signup" class="btn btn-lg btn-primary fw-bolder">Sign up</a>
+      </div>
+    </div>
+  </div>
+</Layout>

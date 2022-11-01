@@ -1,0 +1,32 @@
+---
+// Interfaces
+import type ICartItem from '../../../interfaces/ICartItem';
+export interface Props {
+  cartItem: ICartItem
+}
+const {cartItem} = Astro.props as Props;
+---
+
+<!--begin::Cart Item-->
+<div class="d-flex align-items-center justify-content-between py-2">
+    <!--begin::Item Info-->
+    <div class="d-flex align-items-center">
+        <a href={`/products/${cartItem.id}`} class="symbol symbox-50px" aria-label="go to product page">
+            <img src={`${import.meta.env.SERVER_URL}${cartItem.image}`} alt={cartItem.title} />
+        </a>
+        <div class="ms-4">
+        <a href={`/products/${cartItem.id}`} class="text-gray-700 text-hover-primary fs-5 fw-bold"
+            >{cartItem.title}</a
+        >
+        </div>
+    </div>
+    <!--end::Item Info-->
+    <!--begin::Delete item-->
+    <button type="button" aria-label="delete cart item" 
+        class="btn btn-icon btn-custom btn-icon-muted btn-active-light btn-active-color-primary"
+    >
+        <i data-id={cartItem.id} class="bi bi-trash fs-2 text-gray-700 delete_btn"></i>
+    </button>
+    <!--end::Delete item-->
+</div>
+<!--end::Cart Item-->

@@ -1,0 +1,20 @@
+---
+// Components
+import MenuItem from "./MenuItem.astro";
+// Menu links data
+const menuLinks = [
+  { name: "Home", link: "/" },
+  { name: "Products", link: "/products" },
+];
+---
+
+<div class="app-header-menu align-items-stretch">
+  <!--begin::Menu Items-->
+  <div
+    id="kt_app_header_menu"
+    class="menu menu-rounded my-5 align-items-stretch fw-semibold px-2 px-lg-0"
+  >
+    {menuLinks.map((link) => <MenuItem name={link.name} link={link.link} />)}
+  </div>
+  <!--end::Menu Items-->
+</div>

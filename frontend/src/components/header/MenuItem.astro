@@ -1,0 +1,16 @@
+---
+export interface Props {
+  name: string;
+  link: string;
+  active?: boolean;
+}
+const { name, link, active = false } = Astro.props as Props;
+---
+
+<!--begin::Menu item-->
+<div class={`menu-item mx-2 ${active && "here menu-here-bg"}`}>
+  <a href={link} class="menu-link">
+    <span class="menu-title">{name}</span>
+  </a>
+</div>
+<!--end::Menu item-->

@@ -1,0 +1,40 @@
+---
+export interface Props {
+  icon: string
+  name: string
+  email?: string
+}
+const {icon, name, email=""} = Astro.props as Props;
+---
+
+<div class="app-navbar-item ms-1 ms-lg-3" id={`${!email && "cart"}`}>
+    <!--begin::Button-->
+    <div
+        class="btn btn-icon btn-custom btn-active-light btn-active-color-primary w-35px h-35px w-md-40px h-md-40px"
+        data-kt-menu-trigger="{default: 'click', lg: 'hover'}"
+        data-kt-menu-attach="parent"
+        data-kt-menu-placement="bottom-end"
+    >
+        <i class={`bi bi-${icon} fs-2 text-gray-700`}></i>
+    </div>
+    <!--end::Button-->
+    <!--begin::Dropdown-->
+    <div
+        class="menu menu-sub menu-sub-dropdown menu-column w-100 w-sm-350px p-4"
+        data-kt-menu="true"
+    >
+        <!--begin::Title-->
+        <div class="d-flex flex-column">
+            <div class="fw-bold d-flex align-items-center fs-5">{name}</div>
+            <div class="fw-semibold text-muted fs-7">{email}</div>
+        </div>
+        <!--end::Title-->
+        <!--end::Separator-->
+        <div class="separator my-2"></div>
+        <!--end::Separator-->
+        <!--end::Content-->
+        <slot/>
+        <!--end::Content-->
+    </div>
+    <!--end::Dropdown-->
+</div>

@@ -1,0 +1,24 @@
+---
+// Components
+import Menu from "./Menu.astro";
+import Nav from "./Nav/Nav.astro";
+---
+
+<div id="kt_app_header" class="app-header">
+  <div
+    id="kt_app_header_container"
+    class="app-container container d-flex align-items-stretch justify-content-between"
+  >
+    <div
+      id="kt_app_header_wrapper"
+      class="d-flex align-items-stretch justify-content-between flex-grow-1"
+    >
+      <!--begin::Menu-->
+      <Menu />
+      <!--end::Menu-->
+      <!--begin::User Nav-->
+      <Nav />
+      <!--end::User Nav-->
+    </div>
+  </div>
+</div>
