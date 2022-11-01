@@ -2,6 +2,7 @@
 // Components
 import Header from "../components/header/Header.astro";
 import ProductModal from "../components/product/ProductModal.astro";
+import Toast from "../components/Toast.astro";
 ---
 
 <!DOCTYPE html>
@@ -43,7 +44,10 @@ import ProductModal from "../components/product/ProductModal.astro";
         <!--end::Main content-->
         <!--begin::Product Modal-->
         <ProductModal />
-        <!--begin::Product Modal-->
+        <!--end::Product Modal-->
+        <!--begin::Toast-->
+        <Toast />
+        <!--end::Toast-->
       </div>
     </div>
     <!--begin::Global Javascript Bundle-->
@@ -55,6 +59,72 @@ import ProductModal from "../components/product/ProductModal.astro";
 
 <script>
   //////////////////////////////////////////
+  // Show toast function
+  const showToast = (title: string, message: string) => {
+    // Get toast elements
+    const toastEl = document.querySelector(".toast") as HTMLElement
+    const titleEl = toastEl.querySelector(".me-auto") as HTMLElement
+    const bodyEl = toastEl.querySelector(".toast-body") as HTMLElement
+
+    // Set title and message
+    titleEl.textContent = title
+    bodyEl.textContent = message
+
+    // Show notification
+    toastEl.classList.remove("hide")
+    toastEl.classList.add("show")
+  }
+  //////////////////////////////////////////
+  // Update cart items
+  const updateCartItems = async(actionName: string, productId: number) => {
+    // Get cart
+    fetch(`${import.meta.env.PUBLIC_SERVER_URL}/api/users/me/?populate=deep,3`, {
+      headers: new Headers({
+        'Authorization': `Bearer ${document.cookie.slice(10)}`, 
+        'Content-Type': 'application/x-www-form-urlencoded'
+      }),
+    })
+    .then(res => res.json())
+    .then(data => {
+      let updatedCart = data.cart;
+
+      // Updated cart after deleting cartItem
+      if(actionName === 'delete') {
+        // Update user cart, need only product ids --> example [3, 4, 6]
+        updatedCart = updatedCart
+          .filter((cartItem: { id: number }) => cartItem.id !== productId)
+          .map((cartItem: { id: number }) => cartItem.id)
+      }
+
+      // Updated cart after adding cartItem
+      if(actionName === 'add') {
+        // Update user cart, need only product ids --> example [3, 4, 6]
+        updatedCart = updatedCart.map((cartItem: { id: number }) => cartItem.id)
+        
+        // Check if item is already in the cart
+        if(updatedCart.indexOf(productId) === 1) {
+          // If yes, show toast notification
+          showToast("Cart", "Product is already in your cart!")
+          return
+        }
+        if(updatedCart.indexOf(productId) === -1) {
+          // If not, add it to the cart
+          updatedCart.push(productId)
+        }
+      }
+      fetch(`${import.meta.env.PUBLIC_SERVER_URL}/api/users/${data.id}`, {
+        method: "PUT",
+        headers: new Headers({
+          'Authorization': `Bearer ${document.cookie.slice(10)}`, 
+          'Content-Type': 'application/json'
+        }),
+        body: JSON.stringify({cart: [...updatedCart]})
+      })
+      .then(res => showToast("Success", "Update the page to see the difference!"))
+    })
+    .catch(err => showToast("Error", "Something went wrong :("))
+  }
+  //////////////////////////////////////////
   // Sign out
   const signOutBtn = document.querySelector("#sign_out") as HTMLElement
   signOutBtn.addEventListener("click", function() {
@@ -64,7 +134,7 @@ import ProductModal from "../components/product/ProductModal.astro";
       // Redirect
       window.location.href = "/auth/signin"
     })
-    .catch(err => console.log(err))
+    .catch(err => showToast("Error", "Something went wrong :("))
   })
   //////////////////////////////////////////
   // Delete cart item
@@ -72,75 +142,23 @@ import ProductModal from "../components/product/ProductModal.astro";
   cart.addEventListener('click', event => {
     const element = event.target as HTMLElement
     if (element.classList.contains("delete_btn")) {
+      // Get product id
       const cartItemToDeleteId = +element.getAttribute("data-id")!;
-      // Get cart
-      fetch(`${import.meta.env.PUBLIC_SERVER_URL}/api/users/me/?populate=deep,3`, {
-        headers: new Headers({
-          'Authorization': `Bearer ${document.cookie.slice(10)}`, 
-          'Content-Type': 'application/x-www-form-urlencoded'
-        }),
-      })
-      .then(res => res.json())
-      .then(data => {
-        // Update user cart, need only product ids --> example [3, 4, 6]
-        const updatedCart = data.cart
-          .filter((cartItem: { id: number }) => cartItem.id !== cartItemToDeleteId)
-          .map((cartItem: { id: number }) => cartItem.id)
-
-        fetch(`${import.meta.env.PUBLIC_SERVER_URL}/api/users/${data.id}`, {
-          method: "PUT",
-          headers: new Headers({
-            'Authorization': `Bearer ${document.cookie.slice(10)}`, 
-            'Content-Type': 'application/json'
-          }),
-          body: JSON.stringify({cart: [...updatedCart]})
-        })
-      })
-      .catch(err => console.log(err))
+      // Delete it from the cart
+      updateCartItems("delete", cartItemToDeleteId)
     }
   })
   //////////////////////////////////////////
   // Add to cart
-  // Get cards
   const container = document.querySelector("#main_content") as HTMLElement
-
   // Add event listener
   container.addEventListener('click', event => {
     const element = event.target as HTMLElement
-
     if (element.classList.contains("add_btn")) {
+      // Get product id
       const cartItemToAddId = +element.getAttribute("data-id")!;
-
-      // Get cart
-      fetch(`${import.meta.env.PUBLIC_SERVER_URL}/api/users/me/?populate=deep,3`, {
-        headers: new Headers({
-          'Authorization': `Bearer ${document.cookie.slice(10)}`, 
-          'Content-Type': 'application/x-www-form-urlencoded'
-        }),
-      })
-      .then(res => res.json())
-      .then(data => {
-        // Update user cart, need only product ids --> example [3, 4, 6]
-        let updatedCart = data.cart.map((cartItem: { id: number }) => cartItem.id)
-        
-        // Check if item is already in the cart
-        if(updatedCart.indexOf(cartItemToAddId) === -1) {
-          // If not, add it to the cart
-          updatedCart.push(cartItemToAddId)
-          fetch(`${import.meta.env.PUBLIC_SERVER_URL}/api/users/${data.id}`, {
-            method: "PUT",
-            headers: new Headers({
-              'Authorization': `Bearer ${document.cookie.slice(10)}`, 
-              'Content-Type': 'application/json'
-            }),
-            body: JSON.stringify({cart: [...updatedCart]})
-          })
-        } else {
-          // If item is already in the cart send alert message
-          alert("Item is already in your cart")
-        }
-      })
-      .catch(err => console.log(err))
+      // Add it to the cart
+      updateCartItems("add", cartItemToAddId)
     }
   })
 </script>
