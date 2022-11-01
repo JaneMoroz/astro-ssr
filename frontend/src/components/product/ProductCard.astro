@@ -1,0 +1,68 @@
+---
+export interface Props {
+  product:{
+    id:number,
+    title: string,
+    price: number,
+    image: string
+  },
+  fullScreen?: boolean
+}
+const { product, fullScreen=false } = Astro.props as Props;
+const {id, title, price, image} = product;
+---
+
+<!--begin::Product-->
+<div class={`${fullScreen ? "flex-column-fluid" : "col-md-6 col-xl-4 mb-5"}`} id="product_card">
+  <div class="card-xl-stretch me-md-6 shadow-sm">
+    <!--begin::Image-->
+    { !fullScreen &&  
+      <a
+        class="d-block overlay mb-4"
+        data-fslightbox="lightbox-hot-sales"
+        href={`/products/${id}`}>
+        <div
+          class={`overlay-wrapper bgi-no-repeat bgi-position-center bgi-size-cover card-rounded ${fullScreen ? "min-h-400px" : "min-h-200px"}`}
+          style={`background-image:url('http://localhost:1337${image}')`}>
+        </div>
+        <div class="overlay-layer bg-dark card-rounded bg-opacity-25">
+          <i class="bi bi-eye-fill fs-2x text-white"></i>
+        </div>
+      </a> 
+    }
+    { fullScreen && 
+      <div
+        class={`overlay-wrapper bgi-no-repeat bgi-position-center bgi-size-cover card-rounded ${fullScreen ? "min-h-400px" : "min-h-200px"}`}
+        style={`background-image:url('http://localhost:1337${image}')`}>
+      </div>
+    }
+    <!--end::Image-->
+    <!--begin::Body-->
+    <div class="m-0 p-5">
+      <!--begin::Title-->
+      <a href={`/products/${id}`} class="fs-4 text-gray-700 fw-bold text-hover-primary lh-base">
+        {title}
+      </a>
+      <!--end::Title-->
+      <!--begin::CTA-->
+      <div class="d-flex align-items-center justify-content-between mt-5">
+        <!--begin::Price-->
+        <div class="text-gray-700 fw-lighter fs-1 fw-200">${price}</div>
+        <!--end::Price-->
+        <!--begin::Actions-->
+        <div class="d-flex align-items-center gap-2 gap-lg-3">
+          <!--begin::Add to cart button-->
+          <button type="button" aria-label="add to cart"
+            class="btn btn-icon btn-custom btn-icon-muted btn-active-light btn-active-color-primary">
+              <i data-id={id} class="bi bi-bag fs-2 text-gray-700 add_btn"></i>
+          </button>
+          <!--end::Add to cart button-->
+        </div>
+        <!--end::Actions-->
+      </div>
+      <!--end::CTA-->
+    </div>
+    <!--end::Body-->
+  </div>
+</div>
+<!--end::Product-->

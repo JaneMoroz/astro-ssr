@@ -1,0 +1,33 @@
+---
+// Components
+import Layout from "../../layouts/Layout.astro";
+import PageHero from "../../components/PageHero.astro";
+import ProductCard from "../../components/product/ProductCard.astro";
+
+// Interfaces
+import type IProduct from "../../interfaces/IProduct";
+const id = Astro.params.product;
+
+// Fetch product data
+const response = await fetch(`http://localhost:1337/api/products/${id}/?populate=*`);
+const data = await response.json();
+const product = {
+  id: data.data.id,
+  title: data.data.attributes.title,
+  price: data.data.attributes.price,
+  image: data.data.attributes.image.data.attributes.url
+} as IProduct
+
+// Buttons/Links data
+const actions = [
+  { actionName: "Edit", action: "modal", actionData: `${product.id}` },
+  { actionName: "Delete", action: "", actionData: `${product.id}` },
+];
+---
+
+<Layout>
+  <div class="container d-flex flex-column flex-column-fluid p-10 pb-lg-20">
+    <PageHero name={product.title} actions={actions} />
+    <ProductCard product={product} fullScreen={true}/>
+  </div>
+</Layout>
