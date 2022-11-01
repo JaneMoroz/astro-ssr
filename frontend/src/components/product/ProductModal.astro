@@ -1,0 +1,42 @@
+---
+// Components
+import ProductModalText from "./ProductModalText.astro";
+import ProductModalImage from "./ProductModalImage.astro";
+---
+
+<div class="modal fade" tabindex="-1" id="kt_modal_1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title">Edit Product</h3>
+        <!--begin::Close-->
+        <button type="button"
+          class="btn btn-icon btn-sm btn-active-light-primary ms-2"
+          data-bs-dismiss="modal"
+          aria-label="Close">
+            <i class="bi bi-x fs-2 text-gray-700"></i>
+        </button>
+        <!--end::Close-->
+      </div>
+      <!--begin::Product modal wrapper-->
+      <div class="modal-body">
+        <!--begin::Product modal form-->
+        <form
+          id="kt_ecommerce_add_product_form"
+          class="form d-flex flex-column align-items-stretch fv-plugins-bootstrap5 fv-plugins-framework">
+          <!--begin::Image edit-->
+          <ProductModalImage />
+          <!--end::Image edit-->
+          <!--begin::Text inputs edits-->
+          <ProductModalText />
+          <!--end::Text inputs edits-->
+          <button type="submit" class="btn btn-sm fw-bold btn-primary">
+            Save
+          </button>
+        </form>
+        <!--end::Product modal form-->
+      </div>
+      <!--end::Product modal wrapper-->
+    </div>
+  </div>
+</div>

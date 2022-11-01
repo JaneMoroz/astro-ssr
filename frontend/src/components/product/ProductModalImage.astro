@@ -1,0 +1,50 @@
+<div class="d-flex flex-column gap-7 gap-lg-10 w-100 mb-7 me-lg-10">
+  <div class="card card-flush py-4">
+    <!--begin::Card header-->
+    <div class="card-header align-items-center">
+      <div class="cart-title">
+        <h2 class="text-gray-700">Product Image</h2>
+      </div>
+    </div>
+    <!--end::Card header-->
+    <!--begin::Card body-->
+    <div class="card-body text-center pt-0">
+      <!--begin::Image input-->
+      <div
+        class="image-input image-input-empty image-input-outline image-input-placeholder mb-3"
+        data-kt-image-input="true"
+      >
+        <!--begin::Existing image preview-->
+        <div
+          id="product_image"
+          class="image-input-wrapper w-150px h-150px"
+        >
+        </div>
+        <!--end::Existing image preview-->
+        <!--begin::Label-->
+        <label
+          class="btn btn-icon btn-circle btn-active-color-primary w-25px h-25px bg-body shadow"
+          data-kt-image-input-action="change"
+          data-bs-toggle="tooltip"
+          aria-label="Change image"
+          data-bs-original-title="Change avatar"
+          data-kt-initialized="1"
+        >
+          <i class="bi bi-pencil-fill fs-7"></i>
+          <!--begin::Input-->
+          <input type="file" name="files" accept=".png, .jpg, .jpeg" />
+          <!--begin::Input-->
+        </label>
+        <!--end::Label-->
+      </div>
+      <!--end::Image input-->
+      <!--begin::Description-->
+      <div class="text-muted fs-7">
+        Set the product thumbnail image. Only *.png, *.jpg and *.jpeg image
+        files are accepted
+      </div>
+      <!--end::Description-->
+    </div>
+    <!--end::Card body-->
+  </div>
+</div>

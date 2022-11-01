@@ -1,0 +1,39 @@
+---
+import InputTextGroup from "../InputTextGroup.astro";
+---
+
+<div class="d-flex flex-column flex-row-fluid gap-7 gap-lg-10">
+  <div class="d-flex flex-column gap-7 gap-lg-10">
+    <!--begin::General-->
+    <div class="card card-flush py-4">
+      <!--begin::Card header-->
+      <div class="card-header">
+        <div class="card-title">
+          <h2 class="text-gray-700">General</h2>
+        </div>
+      </div>
+      <!--end::Card header-->
+      <!--begin::Card body-->
+      <div class="card-body pt-0">
+        <!--begin::Name input group-->
+        <InputTextGroup
+          title="Product Name"
+          name="title"
+          placeholder="Product name"
+          required={true}
+        />
+        <!--end::Name input group-->
+        <!--begin::Price input group-->
+        <InputTextGroup
+          title="Price"
+          name="price"
+          placeholder="Product price"
+          required={true}
+        />
+        <!--end::Price input group-->
+      </div>
+      <!--end::Card body-->
+    </div>
+    <!--end::General-->
+  </div>
+</div>
