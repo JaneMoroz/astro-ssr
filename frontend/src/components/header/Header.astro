@@ -22,3 +22,109 @@ import Nav from "./Nav/Nav.astro";
     </div>
   </div>
 </div>
+
+<script>
+  //////////////////////////////////////////
+  // Show toast function
+  const showToast = (title: string, message: string) => {
+    // Get toast elements
+    const toastEl = document.querySelector(".toast") as HTMLElement
+    const titleEl = toastEl.querySelector(".me-auto") as HTMLElement
+    const bodyEl = toastEl.querySelector(".toast-body") as HTMLElement
+
+    // Set title and message
+    titleEl.textContent = title
+    bodyEl.textContent = message
+
+    // Show notification
+    toastEl.classList.remove("hide")
+    toastEl.classList.add("show")
+  }
+  //////////////////////////////////////////
+  // Update cart items
+  const updateCartItems = async(actionName: string, productId: number) => {
+    // Get cart
+    fetch(`${import.meta.env.PUBLIC_SERVER_URL}/api/users/me/?populate=deep,3`, {
+      headers: new Headers({
+        'Authorization': `Bearer ${document.cookie.slice(10)}`, 
+        'Content-Type': 'application/x-www-form-urlencoded'
+      }),
+    })
+    .then(res => res.json())
+    .then(data => {
+      let updatedCart = data.cart;
+
+      // Updated cart after deleting cartItem
+      if(actionName === 'delete') {
+        // Update user cart, need only product ids --> example [3, 4, 6]
+        updatedCart = updatedCart
+          .filter((cartItem: { id: number }) => cartItem.id !== productId)
+          .map((cartItem: { id: number }) => cartItem.id)
+      }
+
+      // Updated cart after adding cartItem
+      if(actionName === 'add') {
+        // Update user cart, need only product ids --> example [3, 4, 6]
+        updatedCart = updatedCart.map((cartItem: { id: number }) => cartItem.id)
+        
+        // Check if item is already in the cart
+        if(updatedCart.indexOf(productId) === 1) {
+          // If yes, show toast notification
+          showToast("Cart", "Product is already in your cart!")
+          return
+        }
+        if(updatedCart.indexOf(productId) === -1) {
+          // If not, add it to the cart
+          updatedCart.push(productId)
+        }
+      }
+      fetch(`${import.meta.env.PUBLIC_SERVER_URL}/api/users/${data.id}`, {
+        method: "PUT",
+        headers: new Headers({
+          'Authorization': `Bearer ${document.cookie.slice(10)}`, 
+          'Content-Type': 'application/json'
+        }),
+        body: JSON.stringify({cart: [...updatedCart]})
+      })
+      .then(res => showToast("Success", "Update the page to see the difference!"))
+    })
+    .catch(err => showToast("Error", "OOPS :( Maybe you haven't SIGN IN 😬"))
+  }
+  //////////////////////////////////////////
+  // Sign out
+  const signOutBtn = document.querySelector("#sign_out") as HTMLElement
+  signOutBtn.addEventListener("click", function() {
+    // Delete cookie using 'cookie' endpoint
+    fetch(`${import.meta.env.PUBLIC_CLIENT_URL}/cookie`)
+    .then(res => {
+      // Redirect
+      window.location.href = "/auth/signin"
+    })
+    .catch(err => showToast("Error", "Something went wrong :("))
+  })
+  //////////////////////////////////////////
+  // Delete cart item
+  const cart = document.querySelector("#cart") as HTMLElement
+  cart.addEventListener('click', event => {
+    const element = event.target as HTMLElement
+    if (element.classList.contains("delete_btn")) {
+      // Get product id
+      const cartItemToDeleteId = +element.getAttribute("data-id")!;
+      // Delete it from the cart
+      updateCartItems("delete", cartItemToDeleteId)
+    }
+  })
+  //////////////////////////////////////////
+  // Add to cart
+  const container = document.querySelector("#main_content") as HTMLElement
+  // Add event listener
+  container.addEventListener('click', event => {
+    const element = event.target as HTMLElement
+    if (element.classList.contains("add_btn")) {
+      // Get product id
+      const cartItemToAddId = +element.getAttribute("data-id")!;
+      // Add it to the cart
+      updateCartItems("add", cartItemToAddId)
+    }
+  })
+</script>
