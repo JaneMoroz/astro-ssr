@@ -35,6 +35,22 @@ const actions = [
 
 <script>
   //////////////////////////////////////////
+  // Show toast function
+  const showToast = (title: string, message: string) => {
+    // Get toast elements
+    const toastEl = document.querySelector(".toast") as HTMLElement
+    const titleEl = toastEl.querySelector(".me-auto") as HTMLElement
+    const bodyEl = toastEl.querySelector(".toast-body") as HTMLElement
+
+    // Set title and message
+    titleEl.textContent = title
+    bodyEl.textContent = message
+
+    // Show notification
+    toastEl.classList.remove("hide")
+    toastEl.classList.add("show")
+  }
+  //////////////////////////////////////////
   // Edit/Delete Product
   const pageHero = document.querySelector("#kt_app_toolbar") as HTMLElement
   pageHero.addEventListener('click', (event) => {
@@ -105,9 +121,25 @@ const actions = [
                 }),
                 body: JSON.stringify({data: product})
               })
-              .then(res => window.location.href = "/products")
+              .then(res => {
+                if(res.ok === false) {
+                  showToast("Error", "OOPS :( Maybe you haven't SIGN IN 😬")
+                }
+                if(res.ok === true) {
+                  window.location.href = "/products"
+                }
+                // Close modal
+                document.querySelector("#kt_modal_1")!.classList.remove("show")
+                document.querySelector(".modal-backdrop")!.classList.remove("show")
+              })
             })
-            .catch(err => console.log(err))
+            .catch(err => {
+              // Close modal
+              document.querySelector("#kt_modal_1")!.classList.remove("show")
+              document.querySelector(".modal-backdrop")!.classList.remove("show")
+              // Show toast
+              showToast("Error", "Something went wrong! Try to stay calm and positive.")
+            })
           });
         })
     } 
@@ -125,8 +157,21 @@ const actions = [
           'Content-Type': 'application/json'
         })
       })
-      .then(res => window.location.href = "/products")
-      .catch(err => console.log(err))
+      .then(res => {
+        if(res.ok === false) {
+          showToast("Error", "OOPS :( Maybe you haven't SIGN IN 😬")
+        }
+        if(res.ok === true) {
+          window.location.href = "/products"
+        }
+      })
+      .catch(err =>  {
+        // Close modal
+        document.querySelector("#kt_modal_1")!.classList.remove("show")
+        document.querySelector(".modal-backdrop")!.classList.remove("show")
+        // Show toast
+        showToast("Error", "Something went wrong! Try to stay calm and positive.")
+      })
     }
   })
 </script>
