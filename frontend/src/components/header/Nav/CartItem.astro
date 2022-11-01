@@ -1,6 +1,7 @@
 ---
 // Interfaces
 import type ICartItem from '../../../interfaces/ICartItem';
+
 export interface Props {
   cartItem: ICartItem
 }
@@ -12,7 +13,7 @@ const {cartItem} = Astro.props as Props;
     <!--begin::Item Info-->
     <div class="d-flex align-items-center">
         <a href={`/products/${cartItem.id}`} class="symbol symbox-50px" aria-label="go to product page">
-            <img src={`${import.meta.env.SERVER_URL}${cartItem.image}`} alt={cartItem.title} />
+            <img src={`${import.meta.env.PUBLIC_SERVER_URL}${cartItem.image}`} alt={cartItem.title} />
         </a>
         <div class="ms-4">
         <a href={`/products/${cartItem.id}`} class="text-gray-700 text-hover-primary fs-5 fw-bold"
