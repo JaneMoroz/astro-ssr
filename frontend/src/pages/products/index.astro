@@ -13,7 +13,7 @@ const actions = [
 import type IProduct from "../../interfaces/IProduct";
 
 // Fetch products data
-const response = await fetch('http://localhost:1337/api/products/?populate=*');
+const response = await fetch(`${import.meta.env.PUBLIC_SERVER_URL}/api/products/?populate=*`);
 const data = await response.json();
 const products = data.data.map((product: { id: number; attributes: { title: string; price: number; image: { data: { attributes: { url: string; }; }; }; }; }) => {
   return {
@@ -43,17 +43,21 @@ const products = data.data.map((product: { id: number; attributes: { title: stri
 </Layout>
 
 <script>
+  //////////////////////////////////////////
+  // Add new product
   // Get form
   const form = document.querySelector("#kt_ecommerce_add_product_form") as HTMLFormElement;
   // Add event listener
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
-    // Get image data
+
+    // Get image data, title, price
     const payload = new FormData(form)
     const title = payload.get("title");
     const price = payload.get("price");
     payload.delete("title")
     payload.delete("price")
+
     // Upload image
     fetch(`${import.meta.env.PUBLIC_SERVER_URL}/api/upload`, {
         method: "POST", body: payload
@@ -67,6 +71,7 @@ const products = data.data.map((product: { id: number; attributes: { title: stri
         price,
         image: imgId
       }
+      
       // Post new product
       fetch(`${import.meta.env.PUBLIC_SERVER_URL}/api/products`,{
         method: "POST",
@@ -76,6 +81,7 @@ const products = data.data.map((product: { id: number; attributes: { title: stri
         }),
         body: JSON.stringify({data: product})
       })
+      .then(res => window.location.href = "/products")
     }).catch(err => console.log(err))
   });
 </script>

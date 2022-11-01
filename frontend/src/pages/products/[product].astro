@@ -6,10 +6,11 @@ import ProductCard from "../../components/product/ProductCard.astro";
 
 // Interfaces
 import type IProduct from "../../interfaces/IProduct";
+
 const id = Astro.params.product;
 
 // Fetch product data
-const response = await fetch(`http://localhost:1337/api/products/${id}/?populate=*`);
+const response = await fetch(`${import.meta.env.PUBLIC_SERVER_URL}/api/products/${id}/?populate=*`);
 const data = await response.json();
 const product = {
   id: data.data.id,
@@ -33,37 +34,47 @@ const actions = [
 </Layout>
 
 <script>
+  //////////////////////////////////////////
   // Edit/Delete Product
   const pageHero = document.querySelector("#kt_app_toolbar") as HTMLElement
   pageHero.addEventListener('click', (event) => {
     const element = event.target as HTMLElement
+
+    //////////////////////////////////////////
     // Edit product
     if(element.dataset.bsToggle) {
       const productId = element.dataset.productid;
+
       // Get product data
       fetch(`${import.meta.env.PUBLIC_SERVER_URL}/api/products/${productId}/?populate=*`)
         .then(res => res.json()).then(data => 
         {
           // Get form
           const form = document.querySelector("#kt_ecommerce_add_product_form") as HTMLFormElement;
-          // Fill inputs with product data
+
+          // Get image data
           const imageUrl = data.data.attributes.image.data.attributes.url;
           const imageId = data.data.attributes.image.data.id
+
+          // Fill inputs with product data
           const titleInput = form.querySelector('input[name="title"]') as HTMLInputElement
           titleInput.value = data.data.attributes.title
           const priceInput = form.querySelector('input[name="price"]') as HTMLInputElement
           priceInput.value = data.data.attributes.price
           const image = form.querySelector("#product_image") as HTMLDivElement
           image.style.backgroundImage = `url("${import.meta.env.PUBLIC_SERVER_URL}${imageUrl}")`
+
           // Add event listener to form
           form.addEventListener('submit', async (e) => {
             e.preventDefault();
-            // Get image data
+
+            // Get image data in formData for upload and save title/price for future use
             const payload = new FormData(form)
             const title = payload.get("title");
             const price = payload.get("price");
             payload.delete("title")
             payload.delete("price")
+
             // Try to upload image
             fetch(`${import.meta.env.PUBLIC_SERVER_URL}/api/upload`, {
                 method: "POST", body: payload
@@ -72,16 +83,19 @@ const actions = [
             .then(data => {
               // Use original image id, if uploading of the new image was unsuccesful
               let imgId = imageId
+
               // If uploading was succesful get uploaded image id
               if(!data.error){
                 imgId = data[0].id
               }
+
               // Create updated product object
               const product = {
                 title,
                 price,
                 image: imgId
               }
+              
               // Update product on the server
               fetch(`${import.meta.env.PUBLIC_SERVER_URL}/api/products/${productId}`,{
                 method: "PUT",
@@ -91,13 +105,16 @@ const actions = [
                 }),
                 body: JSON.stringify({data: product})
               })
+              .then(res => window.location.href = "/products")
             })
             .catch(err => console.log(err))
           });
         })
-    } else {
-      // Delete product
+    } 
 
+    //////////////////////////////////////////
+    // Delete product
+    if(!element.dataset.bsToggle) {
       // Get product id
       const productId = element.dataset.productid;
       // Delete product

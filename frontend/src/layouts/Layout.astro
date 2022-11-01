@@ -103,11 +103,14 @@ import ProductModal from "../components/product/ProductModal.astro";
   // Add to cart
   // Get cards
   const container = document.querySelector("#main_content") as HTMLElement
+
   // Add event listener
   container.addEventListener('click', event => {
     const element = event.target as HTMLElement
+
     if (element.classList.contains("add_btn")) {
       const cartItemToAddId = +element.getAttribute("data-id")!;
+
       // Get cart
       fetch(`${import.meta.env.PUBLIC_SERVER_URL}/api/users/me/?populate=deep,3`, {
         headers: new Headers({
@@ -119,6 +122,7 @@ import ProductModal from "../components/product/ProductModal.astro";
       .then(data => {
         // Update user cart, need only product ids --> example [3, 4, 6]
         let updatedCart = data.cart.map((cartItem: { id: number }) => cartItem.id)
+        
         // Check if item is already in the cart
         if(updatedCart.indexOf(cartItemToAddId) === -1) {
           // If not, add it to the cart

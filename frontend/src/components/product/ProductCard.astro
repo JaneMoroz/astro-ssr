@@ -23,7 +23,7 @@ const {id, title, price, image} = product;
         href={`/products/${id}`}>
         <div
           class={`overlay-wrapper bgi-no-repeat bgi-position-center bgi-size-cover card-rounded ${fullScreen ? "min-h-400px" : "min-h-200px"}`}
-          style={`background-image:url('http://localhost:1337${image}')`}>
+          style={`background-image:url('${import.meta.env.PUBLIC_SERVER_URL}${image}')`}>
         </div>
         <div class="overlay-layer bg-dark card-rounded bg-opacity-25">
           <i class="bi bi-eye-fill fs-2x text-white"></i>
@@ -33,7 +33,7 @@ const {id, title, price, image} = product;
     { fullScreen && 
       <div
         class={`overlay-wrapper bgi-no-repeat bgi-position-center bgi-size-cover card-rounded ${fullScreen ? "min-h-400px" : "min-h-200px"}`}
-        style={`background-image:url('http://localhost:1337${image}')`}>
+        style={`background-image:url('${import.meta.env.PUBLIC_SERVER_URL}${image}')`}>
       </div>
     }
     <!--end::Image-->
