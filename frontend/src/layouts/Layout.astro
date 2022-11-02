@@ -11,7 +11,12 @@ import Toast from "../components/Toast.astro";
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/png" href="/icons/icon-48x48.png" />
+    <link rel="manifest" href="/manifest.json" />
+    <!--ios support-->
+    <link rel="apple-touch-icon" href="/icons/icon-96x96.png" />
+    <meta name="apple-mobile-web-app-status-bar" content="#aa7700" />
+    <meta name="theme-color" content="#ffffff" />
     <!--begin::Fonts-->
     <link
       rel="stylesheet"
@@ -54,6 +59,7 @@ import Toast from "../components/Toast.astro";
     <!--begin::Global Javascript Bundle-->
     <script is:inline src="/assets/plugins/global/plugins.bundle.js"></script>
     <script is:inline src="/assets/js/scripts.bundle.js"></script>
+    <script is:inline src="/app.js"></script>
     <!--end::Global Javascript Bundle-->
   </body>
 </html>
