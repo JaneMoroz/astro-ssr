@@ -48,3 +48,204 @@ const { name, actions } = Astro.props as Props;
   </div>
   <!--end::Page hero container-->
 </div>
+
+<script>
+  //////////////////////////////////////////
+  // HELPER: Modal Elements
+  const modalEl = document.querySelector("#kt_modal_1") as HTMLElement
+
+  const closeModal = () => {
+    const modalBackgroundEl = document.querySelector(".modal-backdrop") as HTMLElement
+    modalEl.classList.remove("show")
+    modalBackgroundEl.classList.remove("show")
+  }
+
+  //////////////////////////////////////////
+  // HELPER: Show toast function
+  const showToast = (title: string, message: string) => {
+    // Get toast elements
+    const toastEl = document.querySelector(".toast") as HTMLElement
+    const titleEl = toastEl.querySelector(".me-auto") as HTMLElement
+    const bodyEl = toastEl.querySelector(".toast-body") as HTMLElement
+
+    // Set title and message
+    titleEl.textContent = title
+    bodyEl.textContent = message
+
+    // Show notification
+    toastEl.classList.remove("hide")
+    toastEl.classList.add("show")
+  }
+
+  //////////////////////////////////////////
+  // HELPER: Upload image to server
+  const uploadImage = async(payload: FormData, originalImgId?: number) => {
+    let imgId = -1
+    // Check if user is authorised
+    if(document.cookie[0] !== undefined) {
+      const res = await fetch(`${import.meta.env.PUBLIC_SERVER_URL}/api/upload`, {
+          method: "POST", body: payload
+      })
+      const data = await res.json()
+
+      // If uploading was unsuccesful get original image id
+      if(originalImgId) {
+        imgId = originalImgId
+      }
+      // If uploading was succesful get uploaded image id
+      if(!data.error){
+        imgId = data[0].id
+      }
+
+      if(imgId === -1) {
+        closeModal()
+        showToast("Error", "OOPS :( Something went wrong 😬")
+      }
+      return imgId
+    } else {
+      closeModal()
+      showToast("Error", "OOPS :( Maybe you haven't SIGN IN 😬")
+      return imgId
+    }
+  }
+
+  //////////////////////////////////////////
+  // HELPER: Add new product to server
+  const addNewProduct = async(product: { title: FormDataEntryValue, price: FormDataEntryValue, image: number}) => {
+    const res = await fetch(`${import.meta.env.PUBLIC_SERVER_URL}/api/products`,{
+      method: "POST",
+      headers: new Headers({
+        'Authorization': `Bearer ${document.cookie.slice(10)}`, 
+        'Content-Type': 'application/json'
+      }),
+      body: JSON.stringify({data: product})
+    })
+    const data = await res.json()
+
+    if(!data.error){
+      window.location.href = "/products"
+    }
+    if(data.error){
+      closeModal()
+      showToast("Error", "OOPS :( Something went wrong.")
+    }
+  }
+
+  //////////////////////////////////////////
+  // HELPER: Update product on server
+  const updateProduct = async(productId: number, product: { title: FormDataEntryValue, price: FormDataEntryValue, image: number}) => {
+    const res = await fetch(`${import.meta.env.PUBLIC_SERVER_URL}/api/products/${productId}`,{
+      method: "PUT",
+      headers: new Headers({
+        'Authorization': `Bearer ${document.cookie.slice(10)}`, 
+        'Content-Type': 'application/json'
+      }),
+      body: JSON.stringify({data: product})
+    })
+    const data = await res.json()
+
+    if(!data.error){
+      window.location.href = "/products"
+    }
+    if(data.error){
+      closeModal()
+      showToast("Error", "OOPS :( Something went wrong.")
+    }
+  }
+
+  //////////////////////////////////////////
+  // HELPER: Delete product on server
+  const deleteProduct = async(productId: number) => {
+    const res = await fetch(`${import.meta.env.PUBLIC_SERVER_URL}/api/products/${productId}`,{
+      method: "DELETE",
+      headers: new Headers({
+        'Authorization': `Bearer ${document.cookie.slice(10)}`, 
+        'Content-Type': 'application/json'
+      })
+    })
+    const data = await res.json()
+
+    if(!data.error){
+      window.location.href = "/products"
+    }
+    if(data.error){
+      showToast("Error", "OOPS :( Something went wrong.")
+    }
+  }
+
+  //////////////////////////////////////////
+  // Add new product/Update existing product
+  const pageHero = document.querySelector("#kt_app_toolbar") as HTMLElement
+  pageHero.addEventListener('click', (event) => {
+    const element = event.target as HTMLElement
+    const isModalToggler = element.dataset.bsToggle
+    const productId = element.dataset.productid!;
+    const isUpdating = productId !== "" && isModalToggler ? true : false
+    const isDeletting = productId !== "" && !isModalToggler ? true : false
+
+    let originalImgId = -1
+
+    if(isUpdating) {
+      console.log("getting data");
+      // Get product data
+      fetch(`${import.meta.env.PUBLIC_SERVER_URL}/api/products/${productId}/?populate=*`)
+      .then(res => res.json())
+      .then(data => {
+        // Get form
+        const form = document.querySelector("#kt_ecommerce_add_product_form") as HTMLFormElement;
+
+        // Get image data
+        const imageUrl = data.data.attributes.image.data.attributes.url;
+        originalImgId = data.data.attributes.image.data.id
+
+        // Fill inputs with product data
+        const titleInput = form.querySelector('input[name="title"]') as HTMLInputElement
+        titleInput.value = data.data.attributes.title
+        const priceInput = form.querySelector('input[name="price"]') as HTMLInputElement
+        priceInput.value = data.data.attributes.price
+        const image = form.querySelector("#product_image") as HTMLDivElement
+        image.style.backgroundImage = `url("${import.meta.env.PUBLIC_SERVER_URL}${imageUrl}")`
+      })
+    }
+
+    if(isDeletting) {
+      console.log("deleting data");
+      deleteProduct(+productId)
+    }
+
+    // Handle form submit
+    const form = document.querySelector("#kt_ecommerce_add_product_form") as HTMLFormElement;
+    // Add event listener
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      // Get image data, title, price from the form
+      const payload = new FormData(form)
+      const title = payload.get("title") as FormDataEntryValue;
+      const price = payload.get("price") as FormDataEntryValue;
+      payload.delete("title")
+      payload.delete("price")
+
+      // Try to upload image
+      let imgId = -1
+      if(originalImgId !== -1) {
+        imgId = await uploadImage(payload, originalImgId)
+      }
+      if(originalImgId === -1) {
+        imgId = await uploadImage(payload)
+      }
+      // If image uploaded and we have it's id
+      if(imgId !== -1) {
+        // Post new product
+        const product = {
+          title,
+          price,
+          image: imgId
+        }
+        // Update product
+        if(isUpdating && productId) updateProduct(+productId, product)
+        // Add new product
+        if(!isUpdating)addNewProduct(product)
+      }
+    })
+  })
+</script>
