@@ -2,14 +2,13 @@ const staticCacheName = "site-static-v1";
 const dynamicCacheName = "site-dynamic-v1";
 const assets = [
   "/",
-  "/index.html",
   "/assets/plugins/global/plugins.bundle.js",
   "/assets/js/scripts.bundle.js",
   "/assets/plugins/global/plugins.bundle.css",
   "/assets/css/style.bundle.css",
   "/app.js",
   "https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700",
-  "/fallback.html",
+  "/fallback",
 ];
 
 // cache size limit function
