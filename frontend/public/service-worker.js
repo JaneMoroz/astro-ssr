@@ -9,9 +9,7 @@ const assets = [
   "/assets/css/style.bundle.css",
   "/app.js",
   "https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700",
-  "/favicon.svg",
   "/fallback.html",
-  "/fallback",
 ];
 
 // cache size limit function
