@@ -64,7 +64,7 @@ self.addEventListener("fetch", function (event) {
           const pageResponse = await caches.match(event.request);
           if (pageResponse) return pageResponse;
           // if not, return fallback page
-          const errorResponse = await caches.match("/fallback.html");
+          const errorResponse = await caches.match("/fallback");
           return errorResponse;
         })
     );
