@@ -16,7 +16,10 @@ export const post: APIRoute = ({ request }) => {
 // Delete cookie
 export const get: APIRoute = ({ params, request }) => {
   const headers = new Headers();
-  headers.append("Set-Cookie", `jwt_token=; Max-Age=-99999999;`);
+  headers.append(
+    "Set-Cookie",
+    `jwt_token=; Max-Age=0; expires=Thu, 01 Jan 1970 00:00:00 GMT;`
+  );
   return new Response(null, {
     status: 200,
     headers,
