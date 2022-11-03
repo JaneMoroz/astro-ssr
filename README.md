@@ -1,8 +1,10 @@
-# Astro SSR Test App
+<h1 align="center">Astro SSR Test App</h1>
+<div align="center">
+   A simple PWA app build with Astro SSR and Strapi CMS.
+</div>
+<br/>
 
-## 📄 About The Project
-
-A simple PWA app build with Astro SSR and Strapi CMS.
+<div align="center"><img src="https://i.ibb.co/KwdRMtN/products.png" width="800"></img></div>
 
 ## 😀 User Can:
 
@@ -87,3 +89,14 @@ npm run dev
 Make sure that urls match ones in `.env`, if not replace them.
 
 🎉
+<br/>
+
+## 💻 Preview:
+<p float="left">
+ <img src="https://i.ibb.co/KwdRMtN/products.png" width="400">
+ <img src="https://i.ibb.co/BT0G0cD/single-product.png" width="400">
+</p>
+<p float="left">
+ <img src="https://i.ibb.co/qW9Yq1s/edit-product.png" width="400">
+ <img src="https://i.ibb.co/X3tRJj7/sign-up.png" width="400">
+</p>
