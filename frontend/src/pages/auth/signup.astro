@@ -9,21 +9,10 @@ import AuthForm from "../../components/auth/AuthForm.astro";
 </Layout>
 
 <script>
-    // Show toast function
-    const showToast = (title: string, message: string) => {
-        // Get toast elements
-        const toastEl = document.querySelector(".toast") as HTMLElement
-        const titleEl = toastEl.querySelector(".me-auto") as HTMLElement
-        const bodyEl = toastEl.querySelector(".toast-body") as HTMLElement
+    //////////////////////////////////////////
+    // HELPER: Auth
+    import {authUser} from "../../helpers/user"
 
-        // Set title and message
-        titleEl.textContent = title
-        bodyEl.textContent = message
-
-        // Show notification
-        toastEl.classList.remove("hide")
-        toastEl.classList.add("show")
-    }
     //////////////////////////////////////////
     // Sign up
     // Get form
@@ -34,25 +23,6 @@ import AuthForm from "../../components/auth/AuthForm.astro";
         // Get data from the form
         const payload = new FormData(form);
         // Try to sign up
-        fetch(`${import.meta.env.PUBLIC_SERVER_URL}/api/auth/local/register`, {
-            method: "POST",
-            body: payload,
-        })
-        .then((res) => res.json())
-        .then((data) => {
-        if (data.jwt) {
-            // Success! Save jwt token to cookie using 'cookie' endpoint
-            fetch(`${import.meta.env.PUBLIC_CLIENT_URL}/cookie`, {
-            method: "POST",
-            headers: { Authorization: `${data.jwt}` },
-            }).then((res) => {
-            // Redirect
-            window.location.href = "/products";
-            });
-        } else {
-            showToast("Error", "Something went wrong. Try again!")
-        }
-        })
-        .catch((err) => showToast("Error", "Something went wrong. Try again!"));
-    });
+        authUser(payload, "sign_up")
+    })
 </script>

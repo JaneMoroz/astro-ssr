@@ -51,142 +51,27 @@ const { name, actions } = Astro.props as Props;
 
 <script>
   //////////////////////////////////////////
-  // HELPER: Modal Elements
-  const modalEl = document.querySelector("#kt_modal_1") as HTMLElement
-
-  const closeModal = () => {
-    const modalBackgroundEl = document.querySelector(".modal-backdrop") as HTMLElement
-    modalEl.classList.remove("show")
-    modalBackgroundEl.classList.remove("show")
-  }
-
-  //////////////////////////////////////////
-  // HELPER: Show toast function
-  const showToast = (title: string, message: string) => {
-    // Get toast elements
-    const toastEl = document.querySelector(".toast") as HTMLElement
-    const titleEl = toastEl.querySelector(".me-auto") as HTMLElement
-    const bodyEl = toastEl.querySelector(".toast-body") as HTMLElement
-
-    // Set title and message
-    titleEl.textContent = title
-    bodyEl.textContent = message
-
-    // Show notification
-    toastEl.classList.remove("hide")
-    toastEl.classList.add("show")
-  }
-
-  //////////////////////////////////////////
-  // HELPER: Upload image to server
-  const uploadImage = async(payload: FormData, originalImgId?: number) => {
-    let imgId = -1
-    // Check if user is authorised
-    if(document.cookie[0] !== undefined) {
-      const res = await fetch(`${import.meta.env.PUBLIC_SERVER_URL}/api/upload`, {
-          method: "POST", body: payload
-      })
-      const data = await res.json()
-
-      // If uploading was unsuccesful get original image id
-      if(originalImgId) {
-        imgId = originalImgId
-      }
-      // If uploading was succesful get uploaded image id
-      if(!data.error){
-        imgId = data[0].id
-      }
-
-      if(imgId === -1) {
-        closeModal()
-        showToast("Error", "OOPS :( Something went wrong 😬")
-      }
-      return imgId
-    } else {
-      closeModal()
-      showToast("Error", "OOPS :( Maybe you haven't SIGN IN 😬")
-      return imgId
-    }
-  }
-
-  //////////////////////////////////////////
-  // HELPER: Add new product to server
-  const addNewProduct = async(product: { title: FormDataEntryValue, price: FormDataEntryValue, image: number}) => {
-    const res = await fetch(`${import.meta.env.PUBLIC_SERVER_URL}/api/products`,{
-      method: "POST",
-      headers: new Headers({
-        'Authorization': `Bearer ${document.cookie.slice(10)}`, 
-        'Content-Type': 'application/json'
-      }),
-      body: JSON.stringify({data: product})
-    })
-    const data = await res.json()
-
-    if(!data.error){
-      window.location.href = "/products"
-    }
-    if(data.error){
-      closeModal()
-      showToast("Error", "OOPS :( Something went wrong.")
-    }
-  }
-
-  //////////////////////////////////////////
-  // HELPER: Update product on server
-  const updateProduct = async(productId: number, product: { title: FormDataEntryValue, price: FormDataEntryValue, image: number}) => {
-    const res = await fetch(`${import.meta.env.PUBLIC_SERVER_URL}/api/products/${productId}`,{
-      method: "PUT",
-      headers: new Headers({
-        'Authorization': `Bearer ${document.cookie.slice(10)}`, 
-        'Content-Type': 'application/json'
-      }),
-      body: JSON.stringify({data: product})
-    })
-    const data = await res.json()
-
-    if(!data.error){
-      window.location.href = "/products"
-    }
-    if(data.error){
-      closeModal()
-      showToast("Error", "OOPS :( Something went wrong.")
-    }
-  }
-
-  //////////////////////////////////////////
-  // HELPER: Delete product on server
-  const deleteProduct = async(productId: number) => {
-    const res = await fetch(`${import.meta.env.PUBLIC_SERVER_URL}/api/products/${productId}`,{
-      method: "DELETE",
-      headers: new Headers({
-        'Authorization': `Bearer ${document.cookie.slice(10)}`, 
-        'Content-Type': 'application/json'
-      })
-    })
-    const data = await res.json()
-
-    if(!data.error){
-      window.location.href = "/products"
-    }
-    if(data.error){
-      showToast("Error", "OOPS :( Something went wrong.")
-    }
-  }
+  // Helpers
+  import {uploadImage, addNewProduct, updateProduct, deleteProduct} from "../helpers/product"
 
   //////////////////////////////////////////
   // Add new product/Update existing product
   const pageHero = document.querySelector("#kt_app_toolbar") as HTMLElement
   pageHero.addEventListener('click', (event) => {
+    // Get element and other data attached to it (if exist)
     const element = event.target as HTMLElement
     const isModalToggler = element.dataset.bsToggle
     const productId = element.dataset.productid!;
-    const isUpdating = productId !== "" && isModalToggler ? true : false
-    const isDeletting = productId !== "" && !isModalToggler ? true : false
 
+    // Determine action
+    const isUpdating = productId !== "" && isModalToggler ? true : false
+    const isDeleting = productId !== "" && !isModalToggler ? true : false
+
+    // Set original image default (not exist)
     let originalImgId = -1
 
+    // If 'update' action
     if(isUpdating) {
-      console.log("getting data");
       // Get product data
       fetch(`${import.meta.env.PUBLIC_SERVER_URL}/api/products/${productId}/?populate=*`)
       .then(res => res.json())
@@ -208,8 +93,8 @@ const { name, actions } = Astro.props as Props;
       })
     }
 
-    if(isDeletting) {
-      console.log("deleting data");
+    // If 'delete' action
+    if(isDeleting) {
       deleteProduct(+productId)
     }
 
