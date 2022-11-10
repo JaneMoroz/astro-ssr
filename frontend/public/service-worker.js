@@ -9,10 +9,8 @@ const assets = [
   "/app.js",
   "https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700",
   "/fallback",
-  "/@vite/client",
   "/manifest.json",
   "/assets/plugins/global/fonts/bootstrap-icons/bootstrap-icons.woff2?8d200481aa7f02a2d63a331fc782cfaf",
-  "/node_modules/vite/dist/client/env.mjs",
 ];
 
 // cache size limit function
