@@ -14,8 +14,9 @@ const {
 ---
 
 <div class="mb-10 fv-row fv-plugins-icon-container">
-  <label class={`${required && "required"} form-label`}>{title}</label>
+  <label for={name} class={`${required && "required"} form-label`}>{title}</label>
   <input
+    id={name}
     type="text"
     name={name}
     class="form-control mb-2"
