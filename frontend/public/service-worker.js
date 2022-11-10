@@ -9,6 +9,10 @@ const assets = [
   "/app.js",
   "https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700",
   "/fallback",
+  "/@vite/client",
+  "/manifest.json",
+  "/assets/plugins/global/fonts/bootstrap-icons/bootstrap-icons.woff2?8d200481aa7f02a2d63a331fc782cfaf",
+  "/node_modules/vite/dist/client/env.mjs",
 ];
 
 // cache size limit function
@@ -44,20 +48,24 @@ self.addEventListener("activate", (event) => {
   );
 });
 
-// fetch events
 self.addEventListener("fetch", function (event) {
-  // Network first, then cache
   if (event.request.method === "GET") {
     event.respondWith(
-      fetch(event.request)
-        .then((fetchRes) => {
-          const res = caches.open(dynamicCacheName).then((cache) => {
-            cache.put(event.request.url, fetchRes.clone());
-            // check cached items size
-            limitCacheSize(dynamicCacheName, 35);
-            return fetchRes;
-          });
-          return res;
+      caches
+        .open(staticCacheName)
+        .then((staticCache) => staticCache.match(event.request))
+        .then((cacheRes) => {
+          return (
+            cacheRes ||
+            fetch(event.request).then((fetchRes) => {
+              return caches.open(dynamicCacheName).then((dynamicCache) => {
+                dynamicCache.put(event.request.url, fetchRes.clone());
+                // check cached items size
+                limitCacheSize(dynamicCacheName, 15);
+                return fetchRes;
+              });
+            })
+          );
         })
         .catch(async function (err) {
           // Return page if it exists in cache
